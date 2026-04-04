@@ -8,7 +8,6 @@ async function loadData() {
     const data = await response.json();
     allProducts = data.products;
 
-    // Display generated date
     if (data.generated_at) {
       const d = new Date(data.generated_at);
       const formatted = d.toLocaleString("zh-TW", {
