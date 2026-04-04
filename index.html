@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>產品查詢</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>產品查詢系統</h1>
+  </header>
+
+  <main>
+    <div class="search-bar">
+      <input
+        type="search"
+        id="search-input"
+        placeholder="搜尋產品名稱、負責人、類別或料號..."
+        autocomplete="off"
+        aria-label="搜尋產品"
+      />
+      <div class="filter-row">
+        <label for="bu-filter">Bu：</label>
+        <select id="bu-filter">
+          <option value="">全部</option>
+        </select>
+
+        <label for="mag-filter">Mag：</label>
+        <select id="mag-filter">
+          <option value="">全部</option>
+        </select>
+
+        <label for="pm-filter">PM：</label>
+        <select id="pm-filter">
+          <option value="">全部</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="result-count" aria-live="polite"></div>
+
+    <div class="table-wrapper">
+      <table id="results-table" aria-label="產品查詢結果">
+        <thead>
+          <tr>
+            <th>Material</th>
+            <th>Description</th>
+            <th>Description MAG</th>
+            <th>Product Hierarchy</th>
+            <th>Bus</th>
+            <th>Bu</th>
+            <th>Mag</th>
+            <th>AG</th>
+            <th>CAG</th>
+            <th>Unit</th>
+            <th>L (cm)</th>
+            <th>W (cm)</th>
+            <th>H (cm)</th>
+            <th>Gross (kg)</th>
+            <th>Net (kg)</th>
+            <th>MOQ</th>
+            <th>Qty/Box</th>
+            <th>PM</th>
+          </tr>
+        </thead>
+        <tbody id="results-body"></tbody>
+      </table>
+    </div>
+
+    <p id="empty-message" hidden>找不到符合的產品。</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

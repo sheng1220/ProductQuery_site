@@ -1,0 +1,126 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+  background: #f5f7fa;
+  color: #222;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+header {
+  background: #1a73e8;
+  color: white;
+  padding: 0.9rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+header h1 { font-size: 1.3rem; font-weight: 600; }
+
+main {
+  max-width: 100%;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+}
+
+/* Search Bar */
+.search-bar {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  margin-bottom: 0.75rem;
+}
+
+#search-input {
+  width: 100%;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.95rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 0.7rem;
+  outline: none;
+  transition: border-color 0.15s;
+}
+#search-input:focus {
+  border-color: #1a73e8;
+  box-shadow: 0 0 0 3px rgba(26,115,232,0.12);
+}
+
+.filter-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.filter-row label { font-size: 0.85rem; color: #555; }
+.filter-row select {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  background: white;
+  cursor: pointer;
+  outline: none;
+}
+.filter-row select:focus { border-color: #1a73e8; }
+
+#result-count {
+  font-size: 0.82rem;
+  color: #666;
+  margin-bottom: 0.5rem;
+  padding-left: 2px;
+}
+
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  white-space: nowrap;
+}
+
+thead { background: #1a73e8; color: white; position: sticky; top: 0; z-index: 1; }
+th { padding: 0.6rem 0.75rem; text-align: left; font-weight: 600; font-size: 0.82rem; }
+td { padding: 0.55rem 0.75rem; border-bottom: 1px solid #eef0f3; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: #f0f4ff; }
+
+/* PM cell styles */
+.pm-exact {
+  font-weight: 600;
+  color: #1a7340;
+}
+
+/* _BU: Mag 未直接對應，以 Bu 層級 fallback */
+.pm-bu {
+  font-weight: 600;
+  color: #b76e00;
+  cursor: help;
+}
+.pm-bu sup {
+  font-size: 0.65rem;
+  margin-left: 2px;
+  background: #fff3e0;
+  color: #b76e00;
+  border: 1px solid #f0c070;
+  border-radius: 3px;
+  padding: 0 3px;
+  font-weight: 700;
+  vertical-align: super;
+}
+
+.pm-empty { color: #bbb; }
+
+#empty-message {
+  text-align: center;
+  color: #888;
+  margin-top: 3rem;
+  font-size: 0.95rem;
+}
