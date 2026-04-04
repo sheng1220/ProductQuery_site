@@ -3,9 +3,22 @@ let allProducts = [];
 
 async function loadData() {
   try {
-    const response = await fetch(DATA_URL);
+    const response = await fetch(DATA_URL, { cache: 'no-store' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    allProducts = await response.json();
+    const data = await response.json();
+    allProducts = data.products;
+
+    // Display generated date
+    if (data.generated_at) {
+      const d = new Date(data.generated_at);
+      const formatted = d.toLocaleString("zh-TW", {
+        timeZone: "Asia/Taipei",
+        year: "numeric", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit",
+      });
+      document.getElementById("data-date").textContent = `資料更新時間：${formatted}`;
+    }
+
     populateFilters(allProducts);
     renderTable(allProducts);
   } catch (err) {
@@ -23,7 +36,6 @@ function unique(arr) {
 function populateFilters(products) {
   fillSelect("bu-filter",  unique(products.map(p => p.bu)));
   fillSelect("mag-filter", unique(products.map(p => p.mag)));
-  // For PM filter, strip _BU suffix so filter options are clean names
   fillSelect("pm-filter",  unique(products.map(p => (p.pm || "").replace(/_BU$/, ""))));
 }
 
@@ -41,21 +53,16 @@ function getFilteredProducts() {
   const query = document.getElementById("search-input").value.toLowerCase().trim();
   const bu    = document.getElementById("bu-filter").value;
   const mag   = document.getElementById("mag-filter").value;
-  const pm    = document.getElementById("pm-filter").value;   // base name, no _BU
+  const pm    = document.getElementById("pm-filter").value;
 
   return allProducts.filter(p => {
     const matchesQuery =
       !query ||
       (p.material             || "").toLowerCase().includes(query) ||
-      (p.material_description || "").toLowerCase().includes(query) ||
-      (p.description_mag      || "").toLowerCase().includes(query) ||
-      (p.product_hierarchy    || "").toLowerCase().includes(query) ||
-      (p.mag                  || "").toLowerCase().includes(query) ||
-      (p.bu                   || "").toLowerCase().includes(query);
+      (p.material_description || "").toLowerCase().includes(query);
 
     const matchesBu  = !bu  || p.bu  === bu;
     const matchesMag = !mag || p.mag === mag;
-    // PM filter matches both "Ryan" and "Ryan_BU"
     const matchesPm  = !pm  || (p.pm || "") === pm || (p.pm || "") === pm + "_BU";
 
     return matchesQuery && matchesBu && matchesMag && matchesPm;
@@ -82,6 +89,7 @@ function renderTable(products) {
     tr.innerHTML = `
       <td>${e(p.material)}</td>
       <td>${e(p.material_description)}</td>
+      <td>${pmCell(p.pm)}</td>
       <td>${e(p.description_mag)}</td>
       <td>${e(p.product_hierarchy)}</td>
       <td>${e(p.bus)}</td>
@@ -97,7 +105,6 @@ function renderTable(products) {
       <td>${e(p.nettweight_kg)}</td>
       <td>${e(p.min_order_qty)}</td>
       <td>${e(p.qty_box_pc)}</td>
-      <td>${pmCell(p.pm)}</td>
     `;
     fragment.appendChild(tr);
   });

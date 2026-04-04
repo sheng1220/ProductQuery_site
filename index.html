@@ -12,33 +12,53 @@
   </header>
 
   <main>
-    <div class="search-bar">
-      <input
-        type="search"
-        id="search-input"
-        placeholder="搜尋產品名稱、負責人、類別或料號..."
-        autocomplete="off"
-        aria-label="搜尋產品"
-      />
-      <div class="filter-row">
-        <label for="bu-filter">Bu：</label>
-        <select id="bu-filter">
-          <option value="">全部</option>
-        </select>
+    <div class="control-panel">
 
-        <label for="mag-filter">Mag：</label>
-        <select id="mag-filter">
-          <option value="">全部</option>
-        </select>
-
-        <label for="pm-filter">PM：</label>
-        <select id="pm-filter">
-          <option value="">全部</option>
-        </select>
+      <div class="control-section">
+        <div class="section-label">關鍵字搜尋</div>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="輸入產品名稱..."
+          autocomplete="off"
+          aria-label="搜尋產品名稱"
+        />
+        <div class="section-note">依 Material Description 搜尋</div>
       </div>
+
+      <div class="control-divider"></div>
+
+      <div class="control-section">
+        <div class="section-label">篩選條件（獨立運作）</div>
+        <div class="filter-row">
+          <div class="filter-item">
+            <label for="bu-filter">Bu</label>
+            <select id="bu-filter">
+              <option value="">全部</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="mag-filter">Mag</label>
+            <select id="mag-filter">
+              <option value="">全部</option>
+            </select>
+          </div>
+          <div class="filter-item">
+            <label for="pm-filter">PM</label>
+            <select id="pm-filter">
+              <option value="">全部</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-note">搜尋與篩選條件各自獨立，互不影響</div>
+      </div>
+
     </div>
 
-    <div id="result-count" aria-live="polite"></div>
+    <div class="meta-row">
+      <span id="result-count" aria-live="polite"></span>
+      <span id="data-date"></span>
+    </div>
 
     <div class="table-wrapper">
       <table id="results-table" aria-label="產品查詢結果">
@@ -46,6 +66,7 @@
           <tr>
             <th>Material</th>
             <th>Description</th>
+            <th>PM</th>
             <th>Description MAG</th>
             <th>Product Hierarchy</th>
             <th>Bus</th>
@@ -61,7 +82,6 @@
             <th>Net (kg)</th>
             <th>MOQ</th>
             <th>Qty/Box</th>
-            <th>PM</th>
           </tr>
         </thead>
         <tbody id="results-body"></tbody>
