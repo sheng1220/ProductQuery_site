@@ -5,6 +5,27 @@ let allProducts = [];
 let filteredProducts = [];
 let currentPage = 1;
 
+const FIELD_LABELS = [
+  ["material",             "Material"],
+  ["material_description", "Description"],
+  ["pm",                   "PM"],
+  ["description_mag",      "Description MAG"],
+  ["product_hierarchy",    "Product Hierarchy"],
+  ["bus",                  "Bus"],
+  ["bu",                   "Bu"],
+  ["mag",                  "Mag"],
+  ["ag",                   "AG"],
+  ["cag",                  "CAG"],
+  ["base_unit",            "Unit"],
+  ["length_cm",            "L (cm)"],
+  ["width_cm",             "W (cm)"],
+  ["height_cm",            "H (cm)"],
+  ["grossweight_kg",       "Gross (kg)"],
+  ["nettweight_kg",        "Net (kg)"],
+  ["min_order_qty",        "MOQ"],
+  ["qty_box_pc",           "Qty/Box"],
+];
+
 async function loadData() {
   try {
     const response = await fetch(DATA_URL, { cache: 'no-store' });
@@ -102,25 +123,27 @@ function renderPage() {
   const fragment = document.createDocumentFragment();
   pageItems.forEach(p => {
     const tr = document.createElement("tr");
+    tr.dataset.idx = JSON.stringify(p); // store product for modal
     tr.innerHTML = `
       <td>${e(p.material)}</td>
       <td>${e(p.material_description)}</td>
       <td>${pmCell(p.pm)}</td>
-      <td>${e(p.description_mag)}</td>
-      <td>${e(p.product_hierarchy)}</td>
-      <td>${e(p.bus)}</td>
-      <td>${e(p.bu)}</td>
-      <td>${e(p.mag)}</td>
-      <td>${e(p.ag)}</td>
-      <td>${e(p.cag)}</td>
-      <td>${e(p.base_unit)}</td>
-      <td>${e(p.length_cm)}</td>
-      <td>${e(p.width_cm)}</td>
-      <td>${e(p.height_cm)}</td>
-      <td>${e(p.grossweight_kg)}</td>
-      <td>${e(p.nettweight_kg)}</td>
-      <td>${e(p.min_order_qty)}</td>
-      <td>${e(p.qty_box_pc)}</td>
+      <td class="desktop-only">${e(p.description_mag)}</td>
+      <td class="desktop-only">${e(p.product_hierarchy)}</td>
+      <td class="desktop-only">${e(p.bus)}</td>
+      <td class="desktop-only">${e(p.bu)}</td>
+      <td class="desktop-only">${e(p.mag)}</td>
+      <td class="desktop-only">${e(p.ag)}</td>
+      <td class="desktop-only">${e(p.cag)}</td>
+      <td class="desktop-only">${e(p.base_unit)}</td>
+      <td class="desktop-only">${e(p.length_cm)}</td>
+      <td class="desktop-only">${e(p.width_cm)}</td>
+      <td class="desktop-only">${e(p.height_cm)}</td>
+      <td class="desktop-only">${e(p.grossweight_kg)}</td>
+      <td class="desktop-only">${e(p.nettweight_kg)}</td>
+      <td class="desktop-only">${e(p.min_order_qty)}</td>
+      <td class="desktop-only">${e(p.qty_box_pc)}</td>
+      <td class="mobile-only expand-btn">›</td>
     `;
     fragment.appendChild(tr);
   });
@@ -128,6 +151,50 @@ function renderPage() {
 
   updatePagination(filteredProducts.length, totalPages);
 }
+
+// Click delegation on tbody — works for both mobile expand and desktop (no-op)
+document.getElementById("results-body").addEventListener("click", function(ev) {
+  const tr = ev.target.closest("tr");
+  if (!tr) return;
+  // On mobile, any tap on a row opens the detail modal
+  if (window.innerWidth <= 768) {
+    const p = JSON.parse(tr.dataset.idx);
+    showDetail(p);
+  }
+});
+
+function showDetail(p) {
+  const body = document.getElementById("detail-body");
+  body.innerHTML = FIELD_LABELS.map(([key, label]) => {
+    let val = p[key] || "";
+    if (key === "pm") {
+      return `<div class="detail-row">
+        <span class="detail-label">${label}</span>
+        <span class="detail-value">${pmCell(p.pm)}</span>
+      </div>`;
+    }
+    return `<div class="detail-row">
+      <span class="detail-label">${label}</span>
+      <span class="detail-value">${e(val) || '<span class="pm-empty">—</span>'}</span>
+    </div>`;
+  }).join("");
+
+  const overlay = document.getElementById("detail-overlay");
+  overlay.hidden = false;
+  // Trigger animation
+  requestAnimationFrame(() => overlay.classList.add("open"));
+}
+
+function closeDetail() {
+  const overlay = document.getElementById("detail-overlay");
+  overlay.classList.remove("open");
+  overlay.addEventListener("transitionend", () => { overlay.hidden = true; }, { once: true });
+}
+
+document.getElementById("detail-close").addEventListener("click", closeDetail);
+document.getElementById("detail-overlay").addEventListener("click", function(ev) {
+  if (ev.target === this) closeDetail();
+});
 
 function updatePagination(total, totalPages) {
   document.getElementById("btn-prev").disabled = currentPage <= 1;
@@ -170,7 +237,6 @@ document.getElementById("page-input").addEventListener("change", function () {
   if (!isNaN(v) && v >= 1 && v <= totalPages) { currentPage = v; renderPage(); }
 });
 
-// Search & filter
 let debounceTimer;
 function onFilterChange() {
   clearTimeout(debounceTimer);

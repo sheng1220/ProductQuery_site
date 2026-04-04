@@ -36,7 +36,7 @@ main {
   padding: 0 1rem;
 }
 
-/* Control Panel — left/right split */
+/* Control Panel — left/right split (desktop) */
 .control-panel {
   background: #242424;
   border-radius: 8px;
@@ -47,7 +47,6 @@ main {
   align-items: flex-start;
   gap: 0;
 }
-
 .control-section {
   padding: 0 1.25rem;
 }
@@ -69,7 +68,6 @@ main {
   color: #00C896;
   margin-bottom: 0.6rem;
 }
-
 .section-note {
   font-size: 0.72rem;
   color: #555;
@@ -166,11 +164,11 @@ td {
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background: #2a2a2a; }
 
+/* Desktop: hide mobile-only elements */
+.mobile-only { display: none; }
+
 /* PM badges */
-.pm-exact {
-  font-weight: 600;
-  color: #00C896;
-}
+.pm-exact { font-weight: 600; color: #00C896; }
 .pm-bu {
   font-weight: 600;
   color: #f0a030;
@@ -222,9 +220,154 @@ tbody tr:hover { background: #2a2a2a; }
 .pagination input[type="number"]:focus { outline: none; border-color: #00C896; }
 .pagination span { color: #666; font-size: 0.85rem; }
 
+/* Detail Modal (hidden by default, shown on mobile via JS) */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+}
+.detail-overlay[hidden] { display: none; }
+
+.detail-sheet {
+  background: #242424;
+  border-top: 2px solid #00C896;
+  border-radius: 12px 12px 0 0;
+  width: 100%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(100%);
+  transition: transform 0.28s ease;
+}
+.detail-overlay.open .detail-sheet {
+  transform: translateY(0);
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #333;
+}
+.detail-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #00C896;
+}
+.detail-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+.detail-close:hover { color: #FFFFFF; }
+
+.detail-body {
+  overflow-y: auto;
+  padding: 0.75rem 1.25rem 2rem;
+}
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #2e2e2e;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-label {
+  font-size: 0.78rem;
+  color: #888;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.detail-value {
+  font-size: 0.88rem;
+  color: #FFFFFF;
+  text-align: right;
+  word-break: break-all;
+}
+
+/* Expand button in table */
+.expand-btn {
+  color: #555;
+  font-size: 1.1rem;
+  text-align: center;
+  cursor: pointer;
+}
+
 #empty-message {
   text-align: center;
   color: #555;
   margin-top: 3rem;
   font-size: 0.95rem;
+}
+
+/* ============================================================
+   MOBILE  (max-width: 768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* Header: stack date below title */
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    padding: 0.8rem 1rem;
+  }
+  #data-date { white-space: normal; }
+
+  /* Control panel: vertical stack */
+  .control-panel {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .control-section:first-child,
+  .control-section:last-child {
+    flex: none;
+    width: 100%;
+    padding: 0;
+  }
+  .control-divider {
+    width: 100%;
+    height: 1px;
+    margin: 0;
+    align-self: auto;
+  }
+
+  /* Filters: full-width selects */
+  .filter-row { gap: 0.75rem; }
+  .filter-item select {
+    font-size: 1rem;
+    padding: 0.5rem 0.65rem;
+    min-width: 90px;
+  }
+
+  /* Table: hide desktop columns, show mobile expand */
+  .desktop-only { display: none; }
+  .mobile-only  { display: table-cell; }
+
+  /* Rows are tappable */
+  tbody tr { cursor: pointer; }
+  tbody tr:active { background: #2a2a2a; }
+
+  /* Pagination: larger touch targets */
+  .pagination button {
+    padding: 0.55rem 1.1rem;
+    font-size: 1.3rem;
+  }
+  .pagination input[type="number"] {
+    width: 55px;
+    padding: 0.45rem;
+    font-size: 1rem;
+  }
 }

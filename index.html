@@ -65,21 +65,22 @@
             <th>Material</th>
             <th>Description</th>
             <th>PM</th>
-            <th>Description MAG</th>
-            <th>Product Hierarchy</th>
-            <th>Bus</th>
-            <th>Bu</th>
-            <th>Mag</th>
-            <th>AG</th>
-            <th>CAG</th>
-            <th>Unit</th>
-            <th>L (cm)</th>
-            <th>W (cm)</th>
-            <th>H (cm)</th>
-            <th>Gross (kg)</th>
-            <th>Net (kg)</th>
-            <th>MOQ</th>
-            <th>Qty/Box</th>
+            <th class="desktop-only">Description MAG</th>
+            <th class="desktop-only">Product Hierarchy</th>
+            <th class="desktop-only">Bus</th>
+            <th class="desktop-only">Bu</th>
+            <th class="desktop-only">Mag</th>
+            <th class="desktop-only">AG</th>
+            <th class="desktop-only">CAG</th>
+            <th class="desktop-only">Unit</th>
+            <th class="desktop-only">L (cm)</th>
+            <th class="desktop-only">W (cm)</th>
+            <th class="desktop-only">H (cm)</th>
+            <th class="desktop-only">Gross (kg)</th>
+            <th class="desktop-only">Net (kg)</th>
+            <th class="desktop-only">MOQ</th>
+            <th class="desktop-only">Qty/Box</th>
+            <th class="mobile-only"></th>
           </tr>
         </thead>
         <tbody id="results-body"></tbody>
@@ -95,6 +96,17 @@
 
     <p id="empty-message" hidden>找不到符合的產品。</p>
   </main>
+
+  <!-- Detail Modal (mobile) -->
+  <div id="detail-overlay" class="detail-overlay" hidden>
+    <div class="detail-sheet">
+      <div class="detail-header">
+        <span class="detail-title">產品詳細資料</span>
+        <button class="detail-close" id="detail-close">✕</button>
+      </div>
+      <div class="detail-body" id="detail-body"></div>
+    </div>
+  </div>
 
   <script src="app.js"></script>
 </body>
