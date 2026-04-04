@@ -1,5 +1,9 @@
 const DATA_URL = "data/products.json";
+const PAGE_SIZE = 100;
+
 let allProducts = [];
+let filteredProducts = [];
+let currentPage = 1;
 
 async function loadData() {
   try {
@@ -19,7 +23,7 @@ async function loadData() {
     }
 
     populateFilters(allProducts);
-    renderTable(allProducts);
+    applyFilters();
   } catch (err) {
     const msg = document.getElementById("empty-message");
     msg.textContent = "無法載入產品資料，請稍後再試。";
@@ -48,13 +52,13 @@ function fillSelect(id, values) {
   });
 }
 
-function getFilteredProducts() {
+function applyFilters() {
   const query = document.getElementById("search-input").value.toLowerCase().trim();
   const bu    = document.getElementById("bu-filter").value;
   const mag   = document.getElementById("mag-filter").value;
   const pm    = document.getElementById("pm-filter").value;
 
-  return allProducts.filter(p => {
+  filteredProducts = allProducts.filter(p => {
     const matchesQuery =
       !query ||
       (p.material             || "").toLowerCase().includes(query) ||
@@ -66,24 +70,37 @@ function getFilteredProducts() {
 
     return matchesQuery && matchesBu && matchesMag && matchesPm;
   });
+
+  currentPage = 1;
+  renderPage();
 }
 
-function renderTable(products) {
+function renderPage() {
   const tbody    = document.getElementById("results-body");
   const emptyMsg = document.getElementById("empty-message");
   const countEl  = document.getElementById("result-count");
 
-  tbody.innerHTML = "";
-  countEl.textContent = `顯示 ${products.length} / ${allProducts.length} 筆`;
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  if (currentPage > totalPages) currentPage = totalPages;
 
-  if (products.length === 0) {
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filteredProducts.slice(start, start + PAGE_SIZE);
+
+  tbody.innerHTML = "";
+
+  countEl.textContent = filteredProducts.length > 0
+    ? `共 ${filteredProducts.length} 筆，第 ${currentPage} / ${totalPages} 頁`
+    : `共 0 筆`;
+
+  if (filteredProducts.length === 0) {
     emptyMsg.hidden = false;
+    updatePagination(0, 1);
     return;
   }
   emptyMsg.hidden = true;
 
   const fragment = document.createDocumentFragment();
-  products.forEach(p => {
+  pageItems.forEach(p => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${e(p.material)}</td>
@@ -108,6 +125,17 @@ function renderTable(products) {
     fragment.appendChild(tr);
   });
   tbody.appendChild(fragment);
+
+  updatePagination(filteredProducts.length, totalPages);
+}
+
+function updatePagination(total, totalPages) {
+  document.getElementById("btn-prev").disabled = currentPage <= 1;
+  document.getElementById("btn-next").disabled = currentPage >= totalPages;
+  const pageInput = document.getElementById("page-input");
+  pageInput.value = currentPage;
+  pageInput.max = totalPages;
+  document.getElementById("page-total").textContent = `/ ${totalPages}`;
 }
 
 function pmCell(pm) {
@@ -128,15 +156,30 @@ function e(str) {
     .replace(/"/g, "&quot;");
 }
 
+// Pagination controls
+document.getElementById("btn-prev").addEventListener("click", () => {
+  if (currentPage > 1) { currentPage--; renderPage(); }
+});
+document.getElementById("btn-next").addEventListener("click", () => {
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  if (currentPage < totalPages) { currentPage++; renderPage(); }
+});
+document.getElementById("page-input").addEventListener("change", function () {
+  const totalPages = Math.ceil(filteredProducts.length / PAGE_SIZE);
+  const v = parseInt(this.value);
+  if (!isNaN(v) && v >= 1 && v <= totalPages) { currentPage = v; renderPage(); }
+});
+
+// Search & filter
 let debounceTimer;
 function onFilterChange() {
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => renderTable(getFilteredProducts()), 150);
+  debounceTimer = setTimeout(applyFilters, 200);
 }
 
 document.getElementById("search-input").addEventListener("input", onFilterChange);
-document.getElementById("bu-filter").addEventListener("change", onFilterChange);
-document.getElementById("mag-filter").addEventListener("change", onFilterChange);
-document.getElementById("pm-filter").addEventListener("change", onFilterChange);
+document.getElementById("bu-filter").addEventListener("change", applyFilters);
+document.getElementById("mag-filter").addEventListener("change", applyFilters);
+document.getElementById("pm-filter").addEventListener("change", applyFilters);
 
 loadData();
