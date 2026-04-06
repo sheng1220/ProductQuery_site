@@ -10,49 +10,40 @@
   <header>
     <h1>產品查詢系統</h1>
     <span id="data-date"></span>
+    <span id="contact-note">系統維護：Ryan｜如有使用問題，請聯繫系統負責人</span>
   </header>
 
   <main>
     <div class="control-panel">
 
-      <div class="control-section">
-        <div class="section-label">方法一：關鍵字搜尋</div>
-        <input
-          type="search"
-          id="search-input"
-          placeholder="輸入產品名稱..."
-          autocomplete="off"
-          aria-label="搜尋產品名稱"
-        />
-        <div class="section-note">依 Material / Material Description 搜尋</div>
-      </div>
-
-      <div class="control-divider"></div>
-
-      <div class="control-section">
-        <div class="section-label">方法二：篩選條件</div>
-        <div class="filter-row">
-          <div class="filter-item">
-            <label for="bu-filter">Bu</label>
-            <select id="bu-filter">
-              <option value="">全部</option>
-            </select>
-          </div>
-          <div class="filter-item">
-            <label for="mag-filter">Mag</label>
-            <select id="mag-filter">
-              <option value="">全部</option>
-            </select>
-          </div>
-          <div class="filter-item">
-            <label for="pm-filter">PM</label>
-            <select id="pm-filter">
-              <option value="">全部</option>
-            </select>
-          </div>
+      <div class="filter-row">
+        <div class="filter-item">
+          <label for="bu-filter">Bu</label>
+          <select id="bu-filter">
+            <option value="">全部</option>
+          </select>
         </div>
-        <div class="section-note">三個條件同時生效，與方法一各自獨立</div>
+        <div class="filter-item">
+          <label for="mag-filter">Mag</label>
+          <select id="mag-filter">
+            <option value="">全部</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="pm-filter">PM</label>
+          <select id="pm-filter">
+            <option value="">全部</option>
+          </select>
+        </div>
       </div>
+
+      <input
+        type="search"
+        id="search-input"
+        placeholder="輸入關鍵字搜尋產品名稱或料號..."
+        autocomplete="off"
+        aria-label="搜尋產品名稱或料號"
+      />
 
     </div>
 
