@@ -40,7 +40,11 @@ async function loadData() {
         year: "numeric", month: "2-digit", day: "2-digit",
         hour: "2-digit", minute: "2-digit",
       });
-      document.getElementById("data-date").textContent = `資料更新時間：${formatted}`;
+      const orderbook = data.orderbook_file ? `Orderbook：${data.orderbook_file}` : "";
+      const rr = data.rr_file ? `R&R：${data.rr_file}` : "";
+      const sources = [orderbook, rr].filter(Boolean).join("　|　");
+      document.getElementById("data-date").textContent =
+        `資料更新時間：${formatted}　|　${sources}`;
     }
 
     populateFilters(allProducts);
