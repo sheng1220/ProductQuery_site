@@ -18,7 +18,13 @@
 
       <div class="filter-row">
         <div class="filter-item">
-          <label for="bu-filter">BG</label>
+          <label for="bg-filter">BG</label>
+          <select id="bg-filter">
+            <option value="">全部</option>
+          </select>
+        </div>
+        <div class="filter-item">
+          <label for="bu-filter">BU</label>
           <select id="bu-filter">
             <option value="">全部</option>
           </select>
@@ -47,7 +53,10 @@
 
     </div>
 
-    <div id="result-count" aria-live="polite"></div>
+    <div class="result-bar">
+      <div id="result-count" aria-live="polite"></div>
+      <button id="btn-export" class="export-btn" title="匯出 Excel">⬇ 匯出 Excel</button>
+    </div>
 
     <div class="table-wrapper">
       <table id="results-table" aria-label="產品查詢結果">
@@ -58,8 +67,8 @@
             <th>PM</th>
             <th class="desktop-only">Description MAG</th>
             <th class="desktop-only">Product Hierarchy</th>
-            <th class="desktop-only">BU</th>
             <th class="desktop-only">BG</th>
+            <th class="desktop-only">BU</th>
             <th class="desktop-only">Mag</th>
             <th class="desktop-only">AG</th>
             <th class="desktop-only">CAG</th>
@@ -99,6 +108,7 @@
     </div>
   </div>
 
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
