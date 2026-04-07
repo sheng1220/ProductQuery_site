@@ -10,6 +10,9 @@ body {
 
 /* Header */
 header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   background: #111111;
   color: #FFFFFF;
   padding: 0.9rem 2rem;
@@ -115,19 +118,19 @@ main {
 }
 .export-btn {
   background: #242424;
-  color: #00C896;
-  border: 1px solid #00C896;
+  color: #aaa;
+  border: 1px solid #444;
   border-radius: 6px;
   padding: 0.35rem 0.85rem;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s;
 }
 .export-btn:hover {
-  background: #00C896;
-  color: #111;
+  border-color: #00C896;
+  color: #00C896;
 }
 
 /* Table */
@@ -172,7 +175,7 @@ tbody tr:hover { background: #2a2a2a; }
 /* Sticky header clone */
 #sticky-header-wrapper {
   position: fixed;
-  top: 0;
+  top: 0; /* overridden by JS to sit below the main sticky header */
   z-index: 50;
   overflow: hidden;
   display: none;

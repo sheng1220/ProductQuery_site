@@ -79,6 +79,9 @@ function populateFilters(products) {
 
 function fillSelect(id, values) {
   const sel = document.getElementById(id);
+  if (!sel) return;
+  // Keep only the first "全部" option, remove any previously appended options
+  while (sel.options.length > 1) sel.remove(1);
   values.forEach(v => {
     const opt = document.createElement("option");
     opt.value = v;
@@ -87,18 +90,33 @@ function fillSelect(id, values) {
   });
 }
 
+// Convert a single search token (may contain *) into a test function for a string.
+function makeTokenTest(token) {
+  if (!token.includes('*')) {
+    return str => str.includes(token);
+  }
+  // Escape regex special chars except *, then replace * with .*
+  const pattern = token
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\*/g, '.*');
+  const re = new RegExp(pattern);
+  return str => re.test(str);
+}
+
 function applyFilters() {
-  const query = document.getElementById("search-input").value.toLowerCase().trim();
+  const raw   = document.getElementById("search-input").value.toLowerCase().trim();
   const bg    = document.getElementById("bg-filter").value;
   const bu    = document.getElementById("bu-filter").value;
   const mag   = document.getElementById("mag-filter").value;
   const pm    = document.getElementById("pm-filter").value;
 
+  // Split query into whitespace-separated tokens; each must match (AND logic)
+  const tokens = raw ? raw.split(/\s+/).map(makeTokenTest) : [];
+
   filteredProducts = allProducts.filter(p => {
-    const matchesQuery =
-      !query ||
-      (p.material             || "").toLowerCase().includes(query) ||
-      (p.material_description || "").toLowerCase().includes(query);
+    const mat  = (p.material             || "").toLowerCase();
+    const desc = (p.material_description || "").toLowerCase();
+    const matchesQuery = tokens.every(test => test(mat) || test(desc));
 
     const matchesBg  = !bg  || p.bus === bg;
     const matchesBu  = !bu  || p.bu  === bu;
@@ -365,11 +383,15 @@ function initStickyHeader() {
     wrapper.scrollLeft = tableWrapper.scrollLeft;
   });
 
-  // Show/hide based on real thead visibility
+  // Position the clone below the main sticky header
+  const mainHeaderHeight = Math.round(document.querySelector('header').getBoundingClientRect().height);
+  wrapper.style.top = mainHeaderHeight + 'px';
+
+  // Show/hide: treat thead as "gone" once it scrolls behind the main sticky header
   const thead = document.querySelector('#results-table thead');
   const observer = new IntersectionObserver(([entry]) => {
     wrapper.classList.toggle('visible', !entry.isIntersecting);
-  }, { threshold: 0 });
+  }, { threshold: 0, rootMargin: `-${mainHeaderHeight}px 0px 0px 0px` });
   observer.observe(thead);
 }
 
@@ -379,6 +401,8 @@ function syncStickyWidths() {
   const rect = tableWrapper.getBoundingClientRect();
   stickyClone.wrapper.style.left = rect.left + 'px';
   stickyClone.wrapper.style.width = rect.width + 'px';
+  stickyClone.wrapper.style.top =
+    Math.round(document.querySelector('header').getBoundingClientRect().height) + 'px';
 
   const realThs = document.querySelectorAll('#results-table thead th');
   const cloneThs = document.querySelectorAll('#sticky-header-table thead th');
