@@ -7,16 +7,14 @@ let currentPage = 1;
 let sortKey = null;
 let sortDirection = 'asc';
 
-const NUMERIC_FIELDS = new Set([
-  'length_cm', 'width_cm', 'height_cm',
-  'grossweight_kg', 'nettweight_kg',
-  'min_order_qty', 'qty_box_pc'
-]);
+const NUMERIC_FIELDS = new Set([]);
 
 const FIELD_LABELS = [
   ["material",             "Material"],
   ["material_description", "Description"],
+  ["typ",                  "Typ"],
   ["pm",                   "PM"],
+  ["planner",              "Planner"],
   ["description_mag",      "Description MAG"],
   ["product_hierarchy",    "Product Hierarchy"],
   ["bus",                  "BG"],
@@ -24,14 +22,6 @@ const FIELD_LABELS = [
   ["mag",                  "Mag"],
   ["ag",                   "AG"],
   ["cag",                  "CAG"],
-  ["base_unit",            "Unit"],
-  ["length_cm",            "L (cm)"],
-  ["width_cm",             "W (cm)"],
-  ["height_cm",            "H (cm)"],
-  ["grossweight_kg",       "Gross (kg)"],
-  ["nettweight_kg",        "Net (kg)"],
-  ["min_order_qty",        "MOQ"],
-  ["qty_box_pc",           "Qty/Box"],
 ];
 
 async function loadData() {
@@ -71,10 +61,10 @@ function unique(arr) {
 }
 
 function populateFilters(products) {
-  fillSelect("bg-filter",  unique(products.map(p => p.bus)));
-  fillSelect("bu-filter",  unique(products.map(p => p.bu)));
-  fillSelect("mag-filter", unique(products.map(p => p.mag)));
-  fillSelect("pm-filter",  unique(products.map(p => (p.pm || "").replace(/_BU$/, ""))));
+  fillSelect("bg-filter",       unique(products.map(p => p.bus)));
+  fillSelect("bu-filter",       unique(products.map(p => p.bu)));
+  fillSelect("mag-filter",      unique(products.map(p => p.mag)));
+  fillSelect("desc-mag-filter", unique(products.map(p => p.description_mag)));
 }
 
 function fillSelect(id, values) {
@@ -104,11 +94,11 @@ function makeTokenTest(token) {
 }
 
 function applyFilters() {
-  const raw   = document.getElementById("search-input").value.toLowerCase().trim();
-  const bg    = document.getElementById("bg-filter").value;
-  const bu    = document.getElementById("bu-filter").value;
-  const mag   = document.getElementById("mag-filter").value;
-  const pm    = document.getElementById("pm-filter").value;
+  const raw     = document.getElementById("search-input").value.toLowerCase().trim();
+  const bg      = document.getElementById("bg-filter").value;
+  const bu      = document.getElementById("bu-filter").value;
+  const mag     = document.getElementById("mag-filter").value;
+  const descMag = document.getElementById("desc-mag-filter").value;
 
   // Split query into whitespace-separated tokens; each must match (AND logic)
   const tokens = raw ? raw.split(/\s+/).map(makeTokenTest) : [];
@@ -116,14 +106,14 @@ function applyFilters() {
   filteredProducts = allProducts.filter(p => {
     const mat  = (p.material             || "").toLowerCase();
     const desc = (p.material_description || "").toLowerCase();
-    const matchesQuery = tokens.every(test => test(mat) || test(desc));
+    const matchesQuery   = tokens.every(test => test(mat) || test(desc));
 
-    const matchesBg  = !bg  || p.bus === bg;
-    const matchesBu  = !bu  || p.bu  === bu;
-    const matchesMag = !mag || p.mag === mag;
-    const matchesPm  = !pm  || (p.pm || "") === pm || (p.pm || "") === pm + "_BU";
+    const matchesBg      = !bg      || p.bus === bg;
+    const matchesBu      = !bu      || p.bu  === bu;
+    const matchesMag     = !mag     || p.mag === mag;
+    const matchesDescMag = !descMag || p.description_mag === descMag;
 
-    return matchesQuery && matchesBg && matchesBu && matchesMag && matchesPm;
+    return matchesQuery && matchesBg && matchesBu && matchesMag && matchesDescMag;
   });
 
   currentPage = 1;
@@ -209,7 +199,9 @@ function renderPage() {
     tr.innerHTML = `
       <td>${e(p.material)}</td>
       <td>${e(p.material_description)}</td>
+      <td class="desktop-only">${typCell(p.typ)}</td>
       <td>${pmCell(p.pm)}</td>
+      <td class="desktop-only">${e(p.planner)}</td>
       <td class="desktop-only">${e(p.description_mag)}</td>
       <td class="desktop-only">${e(p.product_hierarchy)}</td>
       <td class="desktop-only">${e(p.bus)}</td>
@@ -217,14 +209,6 @@ function renderPage() {
       <td class="desktop-only">${e(p.mag)}</td>
       <td class="desktop-only">${e(p.ag)}</td>
       <td class="desktop-only">${e(p.cag)}</td>
-      <td class="desktop-only">${e(p.base_unit)}</td>
-      <td class="desktop-only">${e(p.length_cm)}</td>
-      <td class="desktop-only">${e(p.width_cm)}</td>
-      <td class="desktop-only">${e(p.height_cm)}</td>
-      <td class="desktop-only">${e(p.grossweight_kg)}</td>
-      <td class="desktop-only">${e(p.nettweight_kg)}</td>
-      <td class="desktop-only">${e(p.min_order_qty)}</td>
-      <td class="desktop-only">${e(p.qty_box_pc)}</td>
       <td class="mobile-only expand-btn">›</td>
     `;
     fragment.appendChild(tr);
@@ -289,6 +273,12 @@ function updatePagination(total, totalPages) {
   pageInput.value = currentPage;
   pageInput.max = totalPages;
   document.getElementById("page-total").textContent = `/ ${totalPages}`;
+}
+
+function typCell(typ) {
+  if (!typ) return '<span class="pm-empty">—</span>';
+  if (typ === 'ND(無法接單)') return `<span class="typ-nd">${e(typ)}</span>`;
+  return e(typ);
 }
 
 function pmCell(pm) {
@@ -357,7 +347,7 @@ document.getElementById("search-input").addEventListener("input", onFilterChange
 document.getElementById("bg-filter").addEventListener("change", applyFilters);
 document.getElementById("bu-filter").addEventListener("change", applyFilters);
 document.getElementById("mag-filter").addEventListener("change", applyFilters);
-document.getElementById("pm-filter").addEventListener("change", applyFilters);
+document.getElementById("desc-mag-filter").addEventListener("change", applyFilters);
 
 // Sticky header (clone-based)
 let stickyClone = null;
@@ -390,7 +380,9 @@ function initStickyHeader() {
   // Show/hide: treat thead as "gone" once it scrolls behind the main sticky header
   const thead = document.querySelector('#results-table thead');
   const observer = new IntersectionObserver(([entry]) => {
-    wrapper.classList.toggle('visible', !entry.isIntersecting);
+    const becomingVisible = !entry.isIntersecting;
+    if (becomingVisible) syncStickyWidths();
+    wrapper.classList.toggle('visible', becomingVisible);
   }, { threshold: 0, rootMargin: `-${mainHeaderHeight}px 0px 0px 0px` });
   observer.observe(thead);
 }
