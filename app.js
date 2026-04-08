@@ -40,7 +40,8 @@ async function loadData() {
       });
       const orderbook = data.orderbook_file ? `Orderbook：${data.orderbook_file}` : "";
       const rr = data.rr_file ? `R&R：${data.rr_file}` : "";
-      const sources = [orderbook, rr].filter(Boolean).join("　|　");
+      const planner = data.planner_file ? `Planner：${data.planner_file}` : "";
+      const sources = [orderbook, rr, planner].filter(Boolean).join("　|　");
       document.getElementById("data-date").textContent =
         `資料更新時間：${formatted}　|　${sources}`;
     }
@@ -199,9 +200,9 @@ function renderPage() {
     tr.innerHTML = `
       <td>${e(p.material)}</td>
       <td>${e(p.material_description)}</td>
-      <td class="desktop-only">${typCell(p.typ)}</td>
+      <td>${typCell(p.typ)}</td>
       <td>${pmCell(p.pm)}</td>
-      <td class="desktop-only">${e(p.planner)}</td>
+      <td>${plannerCell(p.planner)}</td>
       <td class="desktop-only">${e(p.description_mag)}</td>
       <td class="desktop-only">${e(p.product_hierarchy)}</td>
       <td class="desktop-only">${e(p.bus)}</td>
@@ -243,6 +244,18 @@ function showDetail(p) {
         <span class="detail-value">${pmCell(p.pm)}</span>
       </div>`;
     }
+    if (key === "typ") {
+      return `<div class="detail-row">
+        <span class="detail-label">${label}</span>
+        <span class="detail-value">${typCell(p.typ)}</span>
+      </div>`;
+    }
+    if (key === "planner") {
+      return `<div class="detail-row">
+        <span class="detail-label">${label}</span>
+        <span class="detail-value">${plannerCell(p.planner)}</span>
+      </div>`;
+    }
     return `<div class="detail-row">
       <span class="detail-label">${label}</span>
       <span class="detail-value">${e(val) || '<span class="pm-empty">—</span>'}</span>
@@ -279,6 +292,11 @@ function typCell(typ) {
   if (!typ) return '<span class="pm-empty">—</span>';
   if (typ === 'ND(無法接單)') return `<span class="typ-nd">${e(typ)}</span>`;
   return e(typ);
+}
+
+function plannerCell(planner) {
+  if (!planner) return '<span class="pm-empty">—</span>';
+  return `<span class="pm-exact">${e(planner)}</span>`;
 }
 
 function pmCell(pm) {
