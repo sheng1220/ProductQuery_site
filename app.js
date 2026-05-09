@@ -290,7 +290,7 @@ function updatePagination(total, totalPages) {
 
 function typCell(typ) {
   if (!typ) return '<span class="pm-empty">—</span>';
-  if (typ === 'ND(無法接單)') return `<span class="typ-nd">${e(typ)}</span>`;
+  if (typ === 'ND(無法直接下單)') return `<span class="typ-nd">${e(typ)}</span>`;
   return e(typ);
 }
 
