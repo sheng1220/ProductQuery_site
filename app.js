@@ -296,7 +296,7 @@ function updatePagination(total, totalPages) {
 
 function qtyBoxCell(qty, typ) {
   if (!qty) return '<span class="pm-empty">—</span>';
-  if (typ === 'ND(無法直接下單)') return `<span class="qty-nd-strike">${e(qty)}</span>`;
+  if (typ === 'ND(無法直接下單)') return `<span class="qty-nd">⚠ ${e(qty)}</span>`;
   return e(qty);
 }
 
