@@ -209,7 +209,7 @@ function renderPage() {
       <td class="desktop-only">${e(p.mag)}</td>
       <td class="desktop-only">${e(p.ag)}</td>
       <td class="desktop-only">${e(p.cag)}</td>
-      <td class="desktop-only">${e(p.qty_box_pc)}</td>
+      <td class="desktop-only">${qtyBoxCell(p.qty_box_pc, p.typ)}</td>
       <td class="mobile-only expand-btn">›</td>
     `;
     fragment.appendChild(tr);
@@ -250,6 +250,12 @@ function showDetail(p) {
         <span class="detail-value">${typCell(p.typ)}</span>
       </div>`;
     }
+    if (key === "qty_box_pc") {
+      return `<div class="detail-row">
+        <span class="detail-label">${label}</span>
+        <span class="detail-value">${qtyBoxCell(p.qty_box_pc, p.typ)}</span>
+      </div>`;
+    }
     if (key === "planner") {
       return `<div class="detail-row">
         <span class="detail-label">${label}</span>
@@ -286,6 +292,12 @@ function updatePagination(total, totalPages) {
   pageInput.value = currentPage;
   pageInput.max = totalPages;
   document.getElementById("page-total").textContent = `/ ${totalPages}`;
+}
+
+function qtyBoxCell(qty, typ) {
+  if (!qty) return '<span class="pm-empty">—</span>';
+  if (typ === 'ND(無法直接下單)') return `<span class="qty-nd-strike">${e(qty)}</span>`;
+  return e(qty);
 }
 
 function typCell(typ) {
