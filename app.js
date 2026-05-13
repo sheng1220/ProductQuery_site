@@ -16,12 +16,12 @@ const FIELD_LABELS = [
   ["pm",                   "PM"],
   ["planner",              "Planner"],
   ["description_mag",      "Description MAG"],
-  ["product_hierarchy",    "Product Hierarchy"],
   ["bus",                  "BG"],
   ["bu",                   "BU"],
   ["mag",                  "Mag"],
   ["ag",                   "AG"],
   ["cag",                  "CAG"],
+  ["qty_box_pc",           "Qty Box (Pc)"],
 ];
 
 async function loadData() {
@@ -204,12 +204,12 @@ function renderPage() {
       <td>${pmCell(p.pm)}</td>
       <td>${plannerCell(p.planner)}</td>
       <td class="desktop-only">${e(p.description_mag)}</td>
-      <td class="desktop-only">${e(p.product_hierarchy)}</td>
       <td class="desktop-only">${e(p.bus)}</td>
       <td class="desktop-only">${e(p.bu)}</td>
       <td class="desktop-only">${e(p.mag)}</td>
       <td class="desktop-only">${e(p.ag)}</td>
       <td class="desktop-only">${e(p.cag)}</td>
+      <td class="desktop-only">${e(p.qty_box_pc)}</td>
       <td class="mobile-only expand-btn">›</td>
     `;
     fragment.appendChild(tr);
