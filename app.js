@@ -12,7 +12,7 @@ const NUMERIC_FIELDS = new Set([]);
 const FIELD_LABELS = [
   ["material",             "Material"],
   ["material_description", "Description"],
-  ["typ",                  "Typ"],
+  ["ms",                   "Status"],
   ["pm",                   "PM"],
   ["planner",              "Planner"],
   ["description_mag",      "Description MAG"],
@@ -200,7 +200,7 @@ function renderPage() {
     tr.innerHTML = `
       <td>${e(p.material)}</td>
       <td>${e(p.material_description)}</td>
-      <td>${typCell(p.typ)}</td>
+      <td>${msCell(p.ms)}</td>
       <td>${pmCell(p.pm)}</td>
       <td>${plannerCell(p.planner)}</td>
       <td class="desktop-only">${e(p.description_mag)}</td>
@@ -209,7 +209,7 @@ function renderPage() {
       <td class="desktop-only">${e(p.mag)}</td>
       <td class="desktop-only">${e(p.ag)}</td>
       <td class="desktop-only">${e(p.cag)}</td>
-      <td class="desktop-only">${qtyBoxCell(p.qty_box_pc, p.typ)}</td>
+      <td class="desktop-only">${qtyBoxCell(p.qty_box_pc, p.ms)}</td>
       <td class="mobile-only expand-btn">›</td>
     `;
     fragment.appendChild(tr);
@@ -244,16 +244,16 @@ function showDetail(p) {
         <span class="detail-value">${pmCell(p.pm)}</span>
       </div>`;
     }
-    if (key === "typ") {
+    if (key === "ms") {
       return `<div class="detail-row">
         <span class="detail-label">${label}</span>
-        <span class="detail-value">${typCell(p.typ)}</span>
+        <span class="detail-value">${msCell(p.ms)}</span>
       </div>`;
     }
     if (key === "qty_box_pc") {
       return `<div class="detail-row">
         <span class="detail-label">${label}</span>
-        <span class="detail-value">${qtyBoxCell(p.qty_box_pc, p.typ)}</span>
+        <span class="detail-value">${qtyBoxCell(p.qty_box_pc, p.ms)}</span>
       </div>`;
     }
     if (key === "planner") {
@@ -294,16 +294,20 @@ function updatePagination(total, totalPages) {
   document.getElementById("page-total").textContent = `/ ${totalPages}`;
 }
 
-function qtyBoxCell(qty, typ) {
+function isWarningMs(ms) {
+  return /^Z[FGHO]/i.test(ms || '');
+}
+
+function qtyBoxCell(qty, ms) {
   if (!qty) return '<span class="pm-empty">—</span>';
-  if (typ === 'ND(無法直接下單)') return `<span class="qty-nd">⚠ ${e(qty)}</span>`;
+  if (isWarningMs(ms)) return `<span class="qty-nd">⚠ ${e(qty)}</span>`;
   return e(qty);
 }
 
-function typCell(typ) {
-  if (!typ) return '<span class="pm-empty">—</span>';
-  if (typ === 'ND(無法直接下單)') return `<span class="typ-nd">${e(typ)}</span>`;
-  return e(typ);
+function msCell(ms) {
+  if (!ms) return '<span class="pm-empty">—</span>';
+  if (isWarningMs(ms)) return `<span class="ms-warning">${e(ms)}</span>`;
+  return e(ms);
 }
 
 function plannerCell(planner) {
